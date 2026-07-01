@@ -1,0 +1,29 @@
+{
+  "name": "@tabterm/module-prompts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "tabterm prompts module — a personal library of reusable prompt snippets organized into categories, with a ⌘⇧P command palette and variable interpolation. Extracted from the tabterm monorepo.",
+  "engines": {
+    "bun": ">=1.3.5"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "lucide-react": "^0.460.0"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@tabterm/module-host": "file:./vendor/module-host",
+    "@types/bun": "^1.3.14",
+    "@types/react": "^18.3.31",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.9.3"
+  }
+}
