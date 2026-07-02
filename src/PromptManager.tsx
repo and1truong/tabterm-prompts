@@ -86,6 +86,11 @@ export function PromptManager() {
     host.send({ type: "promptCategory:delete", categoryId: id });
     if (cat === id) setCat("all");
   };
+  const onRenameCategory = (id: string, label: string) => {
+    const next = label.trim();
+    if (!next) return;
+    host.send({ type: "promptCategory:update", categoryId: id, label: next });
+  };
 
   const onKey = (e: React.KeyboardEvent) => {
     if (edit) { if (e.key === "Escape") { e.preventDefault(); setEdit(null); } return; }
@@ -127,7 +132,7 @@ export function PromptManager() {
             <div className="px-2 pt-1 text-[11px] uppercase tracking-wide text-[var(--faint)]" style={{ paddingBottom: 8 }}>Categories</div>
             <CatRow icon={<Layers size={14} />} label="All" count={countFor("all")} active={cat === "all"} onClick={() => setCat("all")} />
             {catList.map((c) => (
-              <CatRow key={c.id} icon={<Folder size={14} />} label={c.label} count={countFor(c.id)} active={cat === c.id} onClick={() => setCat(c.id)} onDelete={() => onDeleteCategory(c.id)} />
+              <CatRow key={c.id} icon={<Folder size={14} />} label={c.label} count={countFor(c.id)} active={cat === c.id} onClick={() => setCat(c.id)} onDelete={() => onDeleteCategory(c.id)} onRename={(label) => onRenameCategory(c.id, label)} />
             ))}
             <CatRow icon={<Folder size={14} />} label="Unsorted" count={countFor("unsorted")} active={cat === "unsorted"} onClick={() => setCat("unsorted")} />
             {newCatLabel === null ? (
@@ -222,10 +227,24 @@ export function PromptManager() {
   );
 }
 
-function CatRow({ icon, label, count, active, onClick, onDelete }: { icon: React.ReactNode; label: string; count: number; active: boolean; onClick: () => void; onDelete?: () => void }) {
+function CatRow({ icon, label, count, active, onClick, onDelete, onRename }: { icon: React.ReactNode; label: string; count: number; active: boolean; onClick: () => void; onDelete?: () => void; onRename?: (label: string) => void }) {
+  const [editing, setEditing] = useState<string | null>(null);
+  const commit = () => { if (editing !== null && editing.trim()) onRename?.(editing); setEditing(null); };
+  if (editing !== null) {
+    return (
+      <div className="flex items-center gap-2 px-2 py-1.5">
+        <span className="text-[var(--faint)]">{icon}</span>
+        <input autoFocus value={editing} onChange={(e) => setEditing(e.target.value)} onBlur={commit}
+          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); commit(); } if (e.key === "Escape") { e.preventDefault(); setEditing(null); } }}
+          className="flex-1 min-w-0 bg-[var(--bg)] border border-[var(--border)] rounded-md px-1.5 py-0.5 text-[13px] outline-none focus:border-[var(--accent)]" />
+      </div>
+    );
+  }
   return (
     <div className="group relative flex items-center">
-      <button onClick={onClick} className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-[13px] ${active ? "bg-[var(--active)] text-[var(--text)]" : "text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)]"}`}>
+      <button onClick={onClick} onDoubleClick={onRename ? () => setEditing(label) : undefined}
+        title={onRename ? "Double-click to rename" : undefined}
+        className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-[13px] ${active ? "bg-[var(--active)] text-[var(--text)]" : "text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)]"}`}>
         <span className={active ? "text-[var(--accent)]" : "text-[var(--faint)]"}>{icon}</span>
         <span className="flex-1 text-left truncate">{label}</span>
         <span className={`text-[11px] text-[var(--faint)] bg-[var(--bg)] border border-[var(--border)] rounded-full px-1.5 transition-opacity duration-150 ${onDelete ? "group-hover:opacity-0" : ""}`}>{count}</span>

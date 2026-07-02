@@ -70,6 +70,16 @@ test("promptCategory:create emits set('promptCategory')", () => {
   expect(effs[0].data.position).toBe(0);
 });
 
+test("promptCategory:update renames the category and emits set('promptCategory')", () => {
+  const { service, pdb } = freshSvc();
+  pdb.createPromptCategory("Work", "c1");
+  const effs = service.handle({ type: "promptCategory:update", categoryId: "c1", label: "Projects" }) as any[];
+  expect(effs).toHaveLength(1);
+  expect(effs[0].k).toBe("set");
+  expect(effs[0].entity).toBe("promptCategory");
+  expect(effs[0].data.label).toBe("Projects");
+});
+
 test("promptCategory:delete reparents children to Unsorted then deletes the category", () => {
   const { service, pdb } = freshSvc();
   pdb.createPromptCategory("Work", "c1");
