@@ -1,6 +1,6 @@
 {
   "name": "@tabterm/module-prompts",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "tabterm prompts module — a personal library of reusable prompt snippets organized into categories, with a ⌘⇧P command palette and variable interpolation. Extracted from the tabterm monorepo.",
