@@ -8,7 +8,7 @@
 // file. (lucide-react is a plain JS dep, so it inlines into client.js rather
 // than being externalized.) Run from the repo root.
 
-import { mkdirSync, rmSync } from "node:fs";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 // Force the production JSX runtime (react/jsx-runtime, not …/jsx-dev-runtime).
@@ -36,6 +36,30 @@ const SERVER_SRC = join(REPO, "server.ts");
 // host-provided, so it stays bundled.
 const CLIENT_EXTERNALS = ["react", "react-dom", "react/jsx-runtime", "zustand"];
 
+async function buildTailwind(): Promise<string> {
+  const input = join(REPO, "src", "tailwind.css");
+  const out = join(OUT, "tailwind.tmp.css");
+  const proc = Bun.spawn(
+    ["bun", "x", "@tailwindcss/cli", "-i", input, "-o", out, "--minify"],
+    { cwd: REPO, env: { ...process.env, NODE_ENV: "production" }, stdout: "inherit", stderr: "inherit" },
+  );
+  const code = await proc.exited;
+  if (code !== 0) {
+    console.error(`[build] tailwind failed (exit ${code})`);
+    process.exit(code || 1);
+  }
+  const css = readFileSync(out, "utf8");
+  rmSync(out, { force: true });
+  return css;
+}
+
+function cssPrelude(css: string): string {
+  return `(function(){try{if(typeof document==="undefined")return;` +
+    `if(document.getElementById("tabterm-prompts-styles"))return;` +
+    `var s=document.createElement("style");s.id="tabterm-prompts-styles";` +
+    `s.textContent=${JSON.stringify(css)};document.head.appendChild(s);}catch(e){}})();\n`;
+}
+
 async function buildClient(): Promise<void> {
   const res = await Bun.build({
     entrypoints: [CLIENT_SRC],
@@ -51,6 +75,10 @@ async function buildClient(): Promise<void> {
     for (const log of res.logs) console.error(log);
     process.exit(1);
   }
+  // Fold the module's compiled Tailwind into client.js so it stays self-contained.
+  const css = await buildTailwind();
+  const out = join(OUT, "client.js");
+  writeFileSync(out, cssPrelude(css) + readFileSync(out, "utf8"));
 }
 
 async function buildServer(): Promise<void> {
