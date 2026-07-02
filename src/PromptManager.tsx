@@ -124,7 +124,7 @@ export function PromptManager() {
         <div className="flex-1 flex min-h-0">
           {/* categories */}
           <div className="w-56 shrink-0 border-r border-[var(--border)] p-2 overflow-y-auto">
-            <div className="px-2 pt-1 pb-2 text-[11px] uppercase tracking-wide text-[var(--faint)]">Categories</div>
+            <div className="px-2 pt-1 text-[11px] uppercase tracking-wide text-[var(--faint)]" style={{ paddingBottom: 8 }}>Categories</div>
             <CatRow icon={<Layers size={14} />} label="All" count={countFor("all")} active={cat === "all"} onClick={() => setCat("all")} />
             {catList.map((c) => (
               <CatRow key={c.id} icon={<Folder size={14} />} label={c.label} count={countFor(c.id)} active={cat === c.id} onClick={() => setCat(c.id)} onDelete={() => onDeleteCategory(c.id)} />
@@ -151,7 +151,7 @@ export function PromptManager() {
               <button onClick={() => startEdit(null)} className="ml-auto flex items-center gap-1 text-[var(--accent)] text-[12px] font-semibold px-2 py-1 rounded-md hover:bg-[var(--hover)]"><Plus size={13} /> New</button>
             </div>
             <div className="flex-1 overflow-y-auto">
-              {sorted.length === 0 && <div className="text-[13px] text-[var(--faint)] px-4 py-8 text-center">No prompts.</div>}
+              {sorted.length === 0 && <div className="text-[13px] text-[var(--faint)] px-4 text-center" style={{ paddingTop: 32, paddingBottom: 32 }}>No prompts.</div>}
               {sorted.map((p) => (
                 <div key={p.id} onClick={() => setSelectedId(p.id)} onDoubleClick={() => startEdit(p)}
                   className={`px-3 py-2.5 border-b border-[var(--border)] cursor-pointer ${selectedId === p.id ? "bg-[var(--hover)] shadow-[inset_2px_0_0_var(--accent)]" : "hover:bg-[var(--hover)]"}`}>
@@ -178,18 +178,18 @@ export function PromptManager() {
                 onDelete={selected ? () => { host.send({ type: "prompt:delete", promptId: selected.id }); setEdit(null); } : undefined} />
             ) : selected ? (
               <>
-                <div className="flex-1 overflow-y-auto p-5">
-                  <h2 className="text-lg font-semibold mb-2.5">{selected.label}</h2>
-                  <div className="flex gap-1.5 flex-wrap mb-3.5">
+                <div className="flex-1 overflow-y-auto" style={{ padding: 20 }}>
+                  <h2 className="text-lg font-semibold" style={{ marginBottom: 10 }}>{selected.label}</h2>
+                  <div className="flex gap-1.5 flex-wrap" style={{ marginBottom: 14 }}>
                     {selected.categoryId && categories[selected.categoryId] && (
                       <span className="inline-flex items-center gap-1 text-[11px] text-[var(--brand-fg)] bg-[var(--brand-bg)] border border-[var(--accent-soft)] rounded px-2 py-0.5 font-semibold"><Folder size={11} /> {categories[selected.categoryId]!.label}</span>
                     )}
                     {selected.tags.map((t) => <span key={t} className="text-[11px] text-[var(--muted)] bg-[var(--bg)] border border-[var(--border)] rounded px-2 py-0.5">#{t}</span>)}
                   </div>
-                  <pre className="mono text-[12.5px] leading-[1.55] text-[var(--text)] bg-[var(--bg)] border border-[var(--border)] rounded-lg p-3.5 whitespace-pre-wrap">{selected.body}</pre>
+                  <pre className="mono text-[12.5px] leading-[1.55] text-[var(--text)] bg-[var(--bg)] border border-[var(--border)] rounded-lg whitespace-pre-wrap" style={{ padding: 14 }}>{selected.body}</pre>
                   {vars.length > 0 && (
-                    <div className="mt-4 border-t border-[var(--border)] pt-4">
-                      <div className="text-[11px] uppercase tracking-wide text-[var(--faint)] mb-2">Variables <span className="normal-case tracking-normal">— filled in on copy</span></div>
+                    <div className="border-t border-[var(--border)]" style={{ marginTop: 16, paddingTop: 16 }}>
+                      <div className="text-[11px] uppercase tracking-wide text-[var(--faint)]" style={{ marginBottom: 8 }}>Variables <span className="normal-case tracking-normal">— filled in on copy</span></div>
                       <div className="flex flex-col gap-2.5">
                         {vars.map((name) => (
                           <label key={name} className="flex flex-col gap-1">
@@ -216,7 +216,7 @@ export function PromptManager() {
           </div>
         </div>
 
-        {toast && <div className="absolute left-1/2 bottom-4 -translate-x-1/2 bg-[var(--accent)] text-[#1a1200] text-[12.5px] font-semibold px-3.5 py-1.5 rounded-lg shadow-lg">{toast}</div>}
+        {toast && <div className="absolute left-1/2 bottom-4 -translate-x-1/2 bg-[var(--accent)] text-[#1a1200] text-[12.5px] font-semibold py-1.5 rounded-lg shadow-lg" style={{ paddingLeft: 14, paddingRight: 14 }}>{toast}</div>}
       </div>
     </div>
   );
@@ -252,11 +252,11 @@ function PromptEditor({ edit, setEdit, onSave, onCancel, categories, onDelete }:
       <div className="flex-1 overflow-y-auto p-4 flex flex-col">
         <label className="text-[11px] uppercase tracking-wide text-[var(--faint)] mb-1.5">Label</label>
         <input value={edit.label} onChange={(e) => setEdit({ ...edit, label: e.target.value })} className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-2.5 py-2 text-[13px] outline-none focus:border-[var(--accent)]" />
-        <label className="text-[11px] uppercase tracking-wide text-[var(--faint)] mt-4 mb-1.5">Body <span className="normal-case tracking-normal text-[var(--faint)]">— copied to clipboard on select</span></label>
+        <label className="text-[11px] uppercase tracking-wide text-[var(--faint)] mb-1.5" style={{ marginTop: 16 }}>Body <span className="normal-case tracking-normal text-[var(--faint)]">— copied to clipboard on select</span></label>
         <textarea value={edit.body} onChange={(e) => setEdit({ ...edit, body: e.target.value })} className="mono flex-1 min-h-[180px] w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-3 py-2.5 text-[13px] leading-[1.55] outline-none focus:border-[var(--accent)] resize-none" />
-        <label className="text-[11px] uppercase tracking-wide text-[var(--faint)] mt-4 mb-1.5">Tags <span className="normal-case tracking-normal text-[var(--faint)]">— comma-separated</span></label>
+        <label className="text-[11px] uppercase tracking-wide text-[var(--faint)] mb-1.5" style={{ marginTop: 16 }}>Tags <span className="normal-case tracking-normal text-[var(--faint)]">— comma-separated</span></label>
         <input value={edit.tagsStr} onChange={(e) => setEdit({ ...edit, tagsStr: e.target.value })} placeholder="git, react" className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-2.5 py-2 text-[13px] outline-none focus:border-[var(--accent)]" />
-        <label className="text-[11px] uppercase tracking-wide text-[var(--faint)] mt-4 mb-1.5">Category</label>
+        <label className="text-[11px] uppercase tracking-wide text-[var(--faint)] mb-1.5" style={{ marginTop: 16 }}>Category</label>
         <select value={edit.categoryId ?? ""} onChange={(e) => setEdit({ ...edit, categoryId: e.target.value || null })} className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-2.5 py-2 text-[13px] outline-none focus:border-[var(--accent)]">
           <option value="">Unsorted</option>
           {categories.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
