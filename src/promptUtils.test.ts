@@ -34,6 +34,10 @@ describe("sortPrompts", () => {
   test("recent: by updatedAt desc", () => {
     expect(sortPrompts(list, "recent").map((x) => x.id)).toEqual(["a", "c", "b"]);
   });
+  test("title: alphabetically by label, case-insensitive", () => {
+    const titled = [p({ id: "z", label: "Zebra" }), p({ id: "a", label: "apple" }), p({ id: "b", label: "Banana" })];
+    expect(sortPrompts(titled, "title").map((x) => x.id)).toEqual(["a", "b", "z"]);
+  });
 });
 
 describe("defaultNewPromptCategoryId", () => {

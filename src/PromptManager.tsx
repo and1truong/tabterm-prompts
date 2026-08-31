@@ -149,8 +149,8 @@ export function PromptManager() {
             <div className="flex items-center gap-2 px-3 py-2.5 border-b border-[var(--border)]">
               <span className="text-[12px] text-[var(--faint)]">Sort</span>
               <div className="flex bg-[var(--bg)] border border-[var(--border)] rounded-md p-0.5">
-                {(["used", "recent"] as PromptSort[]).map((s) => (
-                  <button key={s} onClick={() => setSort(s)} className={`px-2 py-0.5 rounded text-[11px] font-semibold ${sort === s ? "bg-[var(--accent)] text-[#1a1200]" : "text-[var(--faint)]"}`}>{s === "used" ? "Most used" : "Recent"}</button>
+                {(["used", "recent", "title"] as PromptSort[]).map((s) => (
+                  <button key={s} onClick={() => setSort(s)} className={`px-2 py-0.5 rounded text-[11px] font-semibold ${sort === s ? "bg-[var(--accent)] text-[#1a1200]" : "text-[var(--faint)]"}`}>{s === "used" ? "Most used" : s === "recent" ? "Recent" : "Title"}</button>
                 ))}
               </div>
               <button onClick={() => startEdit(null)} className="ml-auto flex items-center gap-1 text-[var(--accent)] text-[12px] font-semibold px-2 py-1 rounded-md hover:bg-[var(--hover)]"><Plus size={13} /> New</button>
@@ -163,11 +163,9 @@ export function PromptManager() {
                   <div className="text-[13.5px] text-[var(--text)] mb-1.5 leading-tight">{p.label}</div>
                   <div className="flex items-center gap-1.5 flex-wrap">
                     {p.tags.slice(0, 3).map((t) => <span key={t} className="text-[11px] text-[var(--muted)] bg-[var(--bg)] border border-[var(--border)] rounded-full px-1.5">#{t}</span>)}
-                    <span className="ml-auto flex items-center gap-2">
-                      <span className={`text-[11px] rounded-full px-1.5 border ${hot.has(p.id) ? "bg-[var(--brand-bg)] text-[var(--brand-fg)] border-[var(--accent-soft)] font-semibold" : "bg-[var(--bg)] text-[var(--muted)] border-[var(--border)]"}`}>⎘ {p.copyCount}</span>
-                      <span className="text-[11px] text-[var(--faint)]">{relTime(p.updatedAt)}</span>
-                    </span>
+                    <span className={`ml-auto text-[11px] rounded-full px-1.5 border ${hot.has(p.id) ? "bg-[var(--brand-bg)] text-[var(--brand-fg)] border-[var(--accent-soft)] font-semibold" : "bg-[var(--bg)] text-[var(--muted)] border-[var(--border)]"}`}>⎘ {p.copyCount}</span>
                   </div>
+                  <div className="mt-1.5 text-[11px] text-[var(--faint)]">Created {relTime(p.createdAt)}</div>
                 </div>
               ))}
             </div>
