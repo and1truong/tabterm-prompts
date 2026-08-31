@@ -22,14 +22,16 @@ export function filterPrompts(prompts: Prompt[], query: string): Prompt[] {
   );
 }
 
-export type PromptSort = "used" | "recent";
+export type PromptSort = "used" | "recent" | "title";
 
 export function sortPrompts(prompts: Prompt[], sort: PromptSort): Prompt[] {
   const copy = [...prompts];
   if (sort === "used") {
     copy.sort((a, b) => b.copyCount - a.copyCount || b.updatedAt - a.updatedAt);
-  } else {
+  } else if (sort === "recent") {
     copy.sort((a, b) => b.updatedAt - a.updatedAt);
+  } else {
+    copy.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }) || b.updatedAt - a.updatedAt);
   }
   return copy;
 }
